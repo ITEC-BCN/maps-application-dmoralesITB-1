@@ -10,7 +10,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MapsScreen(modifier: Modifier = Modifier) {
+fun MapsScreen(modifier: Modifier = Modifier, navigateTo: () -> Unit) {
     Column(modifier.fillMaxSize()) {
         val itb = LatLng(41.4534225, 2.1837151)
         val cameraPositionState = rememberCameraPositionState {
