@@ -8,17 +8,4 @@ import androidx.navigation.compose.composable
 
 @Composable
 fun Navigation(navController : NavHostController){
-    NavHost(navController = navController, startDestination = "MapScreen"){
-        composable<Pantalla1>{
-            MapScreen{navController.navigateTo()}
-        }
-        composable("CreateMarkerScreen"){
-            CreateMarkerScreen()
-            }
-        composable("DetailMarkerScreen"){
-            DetailMarkerScreen()
-        }
-        composable("PermissionsScreen"){
-    }
-
 }
