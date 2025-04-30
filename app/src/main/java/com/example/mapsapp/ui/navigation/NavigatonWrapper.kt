@@ -6,7 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.mapsapp.ui.navigation.Destinations.Pantalla1
 import com.example.mapsapp.ui.navigation.Destinations.Pantalla2
+import com.example.mapsapp.ui.navigation.Destinations.Pantalla3
+import com.example.mapsapp.ui.screens.DetailMarkerScreen
 import com.example.mapsapp.ui.screens.MapsScreen
+import com.example.mapsapp.ui.screens.MarkerListScreen
 
 
 @Composable
@@ -14,6 +17,17 @@ fun Navigation(navController : NavHostController) {
     NavHost(navController, Pantalla1) {
         composable<Pantalla1> {
             MapsScreen { navController.navigate(Pantalla2) }
+        }
+    }
+    NavHost(navController, Pantalla2) {
+        composable<Pantalla2> {
+            DetailMarkerScreen { navController.navigate(Pantalla1) }
+        }
+    }
+
+    NavHost(navController, Pantalla3) {
+        composable<Pantalla3> {
+            MarkerListScreen { navController.navigate(Pantalla1) }
         }
     }
 }
