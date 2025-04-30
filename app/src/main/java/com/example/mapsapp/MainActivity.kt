@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MapsScreen()
+            MapsScreen{}
         }
     }
 }
@@ -29,5 +29,6 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview() {
-    MapsScreen()
+    MapsScreen{}
 }
+
