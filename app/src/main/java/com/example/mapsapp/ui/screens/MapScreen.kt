@@ -39,4 +39,6 @@ fun MyDrawerMenu(){
     val drawerState= rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val selectedItemIndex by remember { mutableIntStateOf(0) }
+    ModalNavigationDrawer()
+
 }
