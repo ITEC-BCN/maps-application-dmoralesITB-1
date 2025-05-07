@@ -1,5 +1,6 @@
 package com.example.mapsapp.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,8 @@ import com.example.mapsapp.ui.navigation.Navigation
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
@@ -38,9 +41,21 @@ fun MapsScreen(modifier: Modifier = Modifier, navigateTo: () -> Unit) {
             position = CameraPosition.fromLatLngZoom(itb, 17f)
         }
         GoogleMap(
-            modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState
-        )
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            onMapClick = {
+                Log.d("MAP CLICKED", it.toString())
+            },
+            onMapLongClick = {
+                Log.d("MAP CLICKED LONG", it.toString())
+            }
+        ) {
+            Marker(
+                state = MarkerState(position = itb),
+                title = "ITB",
+                snippet = "Marker at ITB"
+            )
+        }
     }
 }
 
