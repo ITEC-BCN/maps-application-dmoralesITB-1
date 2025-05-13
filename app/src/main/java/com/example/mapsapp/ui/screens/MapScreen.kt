@@ -34,8 +34,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MapsScreen(modifier: Modifier = Modifier, navigateTo: () -> Unit) {
-    Column(modifier.fillMaxSize()) {
+fun MapsScreen(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxSize()) {
         val itb = LatLng(41.4534225, 2.1837151)
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(itb, 17f)
@@ -69,7 +69,7 @@ fun MyDrawerMenu() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = false,
+        gesturesEnabled = true, // Cambiado a true para permitir gestos
         drawerContent = {
             ModalDrawerSheet {
                 DrawerItem.entries.forEachIndexed { index, drawerItem ->
@@ -83,6 +83,7 @@ fun MyDrawerMenu() {
                         label = { Text(text = drawerItem.text) },
                         selected = index == selectedItemIndex.value,
                         onClick = {
+                            selectedItemIndex.value = index // Actualiza el índice seleccionado
                             scope.launch { drawerState.close() }
                             navController.navigate(drawerItem.ruta)
                         }
@@ -103,7 +104,9 @@ fun MyDrawerMenu() {
                 )
             }
         ) { innerPadding ->
-            Navigation(navController, Modifier.padding(innerPadding))
+            Column(modifier = Modifier.padding(innerPadding)) {
+                MapsScreen() // Llama a MapsScreen
+            }
         }
     }
 }

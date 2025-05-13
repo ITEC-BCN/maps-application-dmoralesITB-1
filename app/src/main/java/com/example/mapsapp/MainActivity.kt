@@ -17,7 +17,6 @@ class MainActivity : ComponentActivity() {
             MapsAppTheme {
                 MyDrawerMenu()
             }
-
         }
     }
 }
@@ -25,9 +24,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview() {
-
     MapsAppTheme {
         MyDrawerMenu()
     }
 }
-
