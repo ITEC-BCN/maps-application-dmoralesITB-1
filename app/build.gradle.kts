@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.serialization)
 
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-
 }
 
 android {
@@ -41,11 +40,9 @@ android {
     buildFeatures {
         compose = true
     }
-
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -68,16 +65,15 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
-    implementation("io.github.jan-tennert.supabase:storage-kt:$3.1.4")
+    implementation("io.github.jan-tennert.supabase:storage-kt:3.1.4")
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("com.google.maps.android:maps-compose:2.11.4")
     implementation("com.google.android.gms:play-services-maps:19.2.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 }
 
 secrets {
     propertiesFileName = "secrets.properties"
     defaultPropertiesFileName = "local.properties"
 }
-

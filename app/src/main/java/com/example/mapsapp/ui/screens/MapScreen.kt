@@ -23,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.navigation.compose.rememberNavController
-import com.example.mapsapp.ui.navigation.DrawerItem
 import com.example.mapsapp.ui.navigation.Navigation
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -34,20 +33,32 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MapsScreen(modifier: Modifier = Modifier) {
+fun MapsScreen(
+    modifier: Modifier = Modifier,
+    onMapClick: () -> Unit,
+    onMapLongClick: () -> Unit,
+    onMapLoaded: () -> Unit
+) {
     Column(modifier = modifier.fillMaxSize()) {
         val itb = LatLng(41.4534225, 2.1837151)
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(itb, 17f)
         }
+
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            onMapClick = {
-                Log.d("MAP CLICKED", it.toString())
+            onMapClick = { latLng ->
+                Log.d("MAP CLICKED", latLng.toString())
+                onMapClick()
             },
-            onMapLongClick = {
-                Log.d("MAP CLICKED LONG", it.toString())
+            onMapLongClick = { latLng ->
+                Log.d("MAP LONG CLICKED", latLng.toString())
+                onMapLongClick()
+            },
+            onMapLoaded = {
+                Log.d("MAP LOADED", "Map loaded")
+                onMapLoaded()
             }
         ) {
             Marker(
@@ -59,6 +70,7 @@ fun MapsScreen(modifier: Modifier = Modifier) {
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyDrawerMenu() {
@@ -69,26 +81,27 @@ fun MyDrawerMenu() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = true, // Cambiado a true para permitir gestos
+        gesturesEnabled = true,
         drawerContent = {
             ModalDrawerSheet {
-                DrawerItem.entries.forEachIndexed { index, drawerItem ->
-                    NavigationDrawerItem(
-                        icon = {
-                            Icon(
-                                imageVector = drawerItem.icon,
-                                contentDescription = drawerItem.text
-                            )
-                        },
-                        label = { Text(text = drawerItem.text) },
-                        selected = index == selectedItemIndex.value,
-                        onClick = {
-                            selectedItemIndex.value = index // Actualiza el índice seleccionado
-                            scope.launch { drawerState.close() }
-                            navController.navigate(drawerItem.ruta)
-                        }
-                    )
-                }
+                DrawerItem.values()
+                    .forEachIndexed { index, drawerItem ->
+                        NavigationDrawerItem(
+                            icon = {
+                                Icon(
+                                    imageVector = drawerItem.icon,
+                                    contentDescription = drawerItem.text
+                                )
+                            },
+                            label = { Text(text = drawerItem.text) },
+                            selected = index == selectedItemIndex.value,
+                            onClick = {
+                                selectedItemIndex.value = index
+                                scope.launch { drawerState.close() }
+                                navController.navigate(drawerItem.ruta)
+                            }
+                        )
+                    }
             }
         },
     ) {
@@ -105,8 +118,29 @@ fun MyDrawerMenu() {
             }
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                MapsScreen() // Llama a MapsScreen
+                Navigation(navController = navController, modifier = Modifier.fillMaxSize())
             }
         }
+    }
+}
+
+
+
+@Composable
+fun SimpleMap() {
+    val itb = LatLng(41.4534225, 2.1837151)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(itb, 15f)
+    }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    ) {
+        Marker(
+            state = MarkerState(position = itb),
+            title = "ITB",
+            snippet = "Institut Tecnològic de Barcelona"
+        )
     }
 }

@@ -3,21 +3,20 @@ package com.example.mapsapp.ui.navigation
 import kotlinx.serialization.Serializable
 
 sealed class Destinations {
-    // NavWrapper entre pantallas
+    // Screens for the main navigation flow
     @Serializable
     object Pantalla1 : Destinations()
 
     @Serializable
     object Pantalla2 : Destinations()
+
     @Serializable
     object Pantalla3 : Destinations()
 
-    // nav de rutas entre opciones del drawer
+    // Screens for the drawer navigation flow
+    @Serializable
+    object Lista : Destinations()
 
     @Serializable
-    object Lista: Destinations()
-    @Serializable
-    object Settings: Destinations()
-
-
+    object Settings : Destinations()
 }
