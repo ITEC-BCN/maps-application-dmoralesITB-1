@@ -1,5 +1,6 @@
 package com.example.mapsapp
 
+import android.Manifest
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,28 +29,26 @@ fun MyApp() {
     val viewModel = viewModel<PermissionViewModel>()
     val permissionStatus = viewModel.permissionStatus.value
     var alreadyRequested by remember { mutableStateOf(false) }
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            val result = when {
-                granted -> PermissionStatus.Granted
-                ActivityCompat.shouldShowRequestPermissionRationale(
-                    activity,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                    -> PermissionStatus.Denied
 
-                else -> PermissionStatus.PermanentlyDenied
-            }
-            viewModel.updatePermissionStatus(result)
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        val result = when {
+            granted -> PermissionStatus.Granted
+            ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION) -> PermissionStatus.Denied
+            else -> PermissionStatus.PermanentlyDenied
         }
+        viewModel.updatePermissionStatus(result)
+    }
+
     LaunchedEffect(Unit) {
         if (!alreadyRequested) {
             alreadyRequested = true
             launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
+
     Column(
-        modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         when (permissionStatus) {
@@ -58,30 +57,12 @@ fun MyApp() {
             PermissionStatus.Denied -> {
                 Text("Permiso denegado")
                 Button(onClick = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) }) {
-                    Text(
-                        "Intentar de nuevo"
-                    )
+                    Text("Intentar de nuevo")
                 }
             }
-
             PermissionStatus.PermanentlyDenied -> {
                 Text("Permiso denegado permanentemente")
-                Button(
-                    onClick = { //TODO }) { Text("Abrir ajustes") }
-                    },
-                    modifier = Modifier,
-                    enabled = false,
-                    shape = TODO(),
-                    colors = TODO(),
-                    elevation = TODO(),
-                    border = TODO(),
-                    contentPadding = TODO(),
-                    interactionSource = TODO(),
-                    content = {
-                        TODO()
-                    }
             }
         }
     }
 }
-
