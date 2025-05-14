@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.navigation.compose.rememberNavController
+import com.example.mapsapp.ui.navigation.DrawerItem
 import com.example.mapsapp.ui.navigation.Navigation
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -31,13 +32,12 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
-
 @Composable
 fun MapsScreen(
     modifier: Modifier = Modifier,
     onMapClick: () -> Unit,
     onMapLongClick: () -> Unit,
-    onMapLoaded: () -> Unit
+    onMapLoaded: () -> Unit // Comment this out temporarily
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         val itb = LatLng(41.4534225, 2.1837151)
@@ -48,17 +48,10 @@ fun MapsScreen(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            onMapClick = { latLng ->
-                Log.d("MAP CLICKED", latLng.toString())
-                onMapClick()
-            },
-            onMapLongClick = { latLng ->
-                Log.d("MAP LONG CLICKED", latLng.toString())
-                onMapLongClick()
-            },
-            onMapLoaded = {
-                Log.d("MAP LOADED", "Map loaded")
-                onMapLoaded()
+            onMapClick = {
+                Log.d("MAP CLICKED", it.toString())
+            }, onMapLongClick = {
+                Log.d("MAP CLICKED LONG", it.toString())
             }
         ) {
             Marker(
@@ -94,9 +87,9 @@ fun MyDrawerMenu() {
                                 )
                             },
                             label = { Text(text = drawerItem.text) },
-                            selected = index == selectedItemIndex.value,
+                            selected = index == selectedItemIndex.intValue,
                             onClick = {
-                                selectedItemIndex.value = index
+                                selectedItemIndex.intValue = index
                                 scope.launch { drawerState.close() }
                                 navController.navigate(drawerItem.ruta)
                             }
@@ -121,26 +114,5 @@ fun MyDrawerMenu() {
                 Navigation(navController = navController, modifier = Modifier.fillMaxSize())
             }
         }
-    }
-}
-
-
-
-@Composable
-fun SimpleMap() {
-    val itb = LatLng(41.4534225, 2.1837151)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(itb, 15f)
-    }
-
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
-    ) {
-        Marker(
-            state = MarkerState(position = itb),
-            title = "ITB",
-            snippet = "Institut Tecnològic de Barcelona"
-        )
     }
 }

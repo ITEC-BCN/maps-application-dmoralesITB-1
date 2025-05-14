@@ -15,10 +15,8 @@ fun Navigation(navController: NavHostController, modifier: Modifier) {
         navController = navController,
         startDestination = Destinations.Pantalla1::class.simpleName!!
     ) {
-
         composable(Destinations.Pantalla1::class.simpleName!!) {
             MapsScreen(
-                modifier = modifier,
                 onMapClick = {
                     navController.navigate(Destinations.Pantalla2::class.simpleName!!)
                 },

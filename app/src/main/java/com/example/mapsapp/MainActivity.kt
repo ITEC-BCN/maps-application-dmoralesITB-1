@@ -6,8 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mapsapp.ui.screens.MyDrawerMenu
-import com.example.mapsapp.ui.screens.SimpleMap
 import com.example.mapsapp.ui.theme.MapsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,7 +14,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MapsAppTheme {
-                SimpleMap()
+                MyApp()
             }
         }
     }
@@ -26,6 +24,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     MapsAppTheme {
-        SimpleMap()
+        MyApp()
     }
 }
