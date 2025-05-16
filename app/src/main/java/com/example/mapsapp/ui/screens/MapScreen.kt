@@ -1,5 +1,3 @@
-package com.example.mapsapp.ui.screens
-
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,8 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.ui.navigation.DrawerItem
 import com.example.mapsapp.ui.navigation.Navigation
@@ -40,7 +36,7 @@ fun MapsScreen(
     modifier: Modifier = Modifier,
     onMapClick: (LatLng) -> Unit,
     onMapLongClick: (LatLng) -> Unit,
-    onMapLoaded: () -> Unit // Comment this out temporarily
+    onMapLoaded: () -> Unit
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         val itb = LatLng(41.4534225, 2.1837151)
@@ -55,7 +51,8 @@ fun MapsScreen(
                 Log.d("MAP CLICKED", it.toString())
             }, onMapLongClick = {
                 Log.d("MAP CLICKED LONG", it.toString())
-            }
+            },
+            onMapLoaded = onMapLoaded // Pass the callback here
         ) {
             Marker(
                 state = MarkerState(position = itb),
@@ -120,8 +117,3 @@ fun MyDrawerMenu() {
     }
 }
 
-@Preview
-@Composable
-fun MyDrawerMenuPreview() {
-    MyDrawerMenu()
-}

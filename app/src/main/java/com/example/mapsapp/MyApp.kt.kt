@@ -1,5 +1,6 @@
 package com.example.mapsapp
 
+import MapsScreen
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -25,79 +26,102 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
-import com.example.mapsapp.ui.navigation.Navigation
-import com.example.mapsapp.ui.screens.MyDrawerMenu
+import android.util.Log
 import com.example.mapsapp.utils.PermissionStatus
 import com.example.mapsapp.viewmodels.PermissionViewModel
-import android.util.Log
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun MyApp() {
     val activity = LocalContext.current as Activity
     val viewModel: PermissionViewModel = viewModel()
-    val permissionStatus by viewModel.permissionStatus
+    val permissionStatus by viewModel.permissionStatus.collectAsState(initial = null)
     var showRationaleDialog by remember { mutableStateOf(false) }
     var showPermanentlyDeniedDialog by remember { mutableStateOf(false) }
     var alreadyRequested by remember { mutableStateOf(false) }
-    val navController = rememberNavController()
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        val result = when {
-            granted -> {
-                Log.d("MyApp", "Permission Granted") // Add this log
-                PermissionStatus.Granted
-            }
+        val newStatus = when {
+            granted -> PermissionStatus.Granted
             ActivityCompat.shouldShowRequestPermissionRationale(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) -> PermissionStatus.Denied
             else -> PermissionStatus.PermanentlyDenied
         }
-        viewModel.updatePermissionStatus(result)
+        Log.d("MyApp", "Permission Result: $newStatus")
+        viewModel.updatePermissionStatus(newStatus)
     }
 
     LaunchedEffect(key1 = Unit) {
+        Log.d("MyApp", "LaunchedEffect triggered")
         if (!alreadyRequested) {
             alreadyRequested = true
+            Log.d("MyApp", "Already requested is $alreadyRequested")
 
-            val currentPermissionStatus = when {
+            var initialStatus: PermissionStatus? = null
+
+            when {
                 ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
-                ) == android.content.pm.PackageManager.PERMISSION_GRANTED -> PermissionStatus.Granted
+                ) == android.content.pm.PackageManager.PERMISSION_GRANTED -> {
+                    initialStatus = PermissionStatus.Granted
+                    Log.d("MyApp", "Permission already granted")
+                }
 
                 ActivityCompat.shouldShowRequestPermissionRationale(
                     activity,
                     Manifest.permission.ACCESS_FINE_LOCATION
-                ) -> PermissionStatus.Denied
-
-                else -> PermissionStatus.PermanentlyDenied
-            }
-
-            when (currentPermissionStatus) {
-                PermissionStatus.Granted -> {
-                    Log.d("MyApp", "Permission already granted")
-                    viewModel.updatePermissionStatus(PermissionStatus.Granted)
+                ) -> {
+                    initialStatus = PermissionStatus.Denied
+                    showRationaleDialog = true
+                    Log.d("MyApp", "Should show rationale")
                 }
-                PermissionStatus.Denied -> showRationaleDialog = true
-                PermissionStatus.PermanentlyDenied -> showPermanentlyDeniedDialog = true
+
                 else -> {
-                    Log.d("MyApp", "Launching permission request")
-                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) // Initial request
+                    if (ActivityCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == android.content.pm.PackageManager.PERMISSION_DENIED
+                    ) {
+                        initialStatus = PermissionStatus.PermanentlyDenied
+                        showPermanentlyDeniedDialog = true
+                        Log.d("MyApp", "Permanently denied")
+                    } else {
+                        initialStatus = null
+                        Log.d("MyApp", "Permission status is null")
+                    }
                 }
             }
 
+            Log.d("MyApp", "Initial permission status: $initialStatus")
+
+            if (initialStatus == null) {
+                Log.d("MyApp", "Launching permission request")
+                launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            } else {
+                Log.d("MyApp", "Updating permission status in ViewModel")
+                viewModel.updatePermissionStatus(initialStatus)
+            }
         }
     }
 
+    // Observe permissionStatus and trigger UI updates
     when (permissionStatus) {
         PermissionStatus.Granted -> {
-            Log.d("MyApp", "PermissionStatus.Granted - Showing MyDrawerMenu")
-            MyDrawerMenu()
+            Log.d("MyApp", "PermissionStatus.Granted - Showing Map")
+            MapsScreen(
+                onMapClick = { /*TODO*/ },
+                onMapLongClick = { /*TODO*/ },
+                onMapLoaded = {
+                }
+            )
+
         }
         PermissionStatus.Denied -> {
+            Log.d("MyApp", "PermissionStatus.Denied")
             if (showRationaleDialog) {
                 RationaleDialog(
                     onConfirm = {
@@ -132,7 +156,8 @@ fun MyApp() {
             }
         }
         PermissionStatus.PermanentlyDenied -> {
-            if (showPermanentlyDeniedDialog.not()) {
+            Log.d("MyApp", "PermissionStatus.PermanentlyDenied")
+            if (!showPermanentlyDeniedDialog) {
                 PermanentlyDeniedDialog(
                     onConfirm = {
                         showPermanentlyDeniedDialog = true
